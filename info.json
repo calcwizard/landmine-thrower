@@ -1,0 +1,10 @@
+{
+	"name": "landmine-thrower",
+	"version": "18.0.0",
+	"factorio_version": "0.18",
+	"title": "Land Mine Thrower",
+	"author": "calcwizard",
+	"homepage": "",
+	"dependencies": ["base >= 0.18.2"],
+	"description": "Turret that throws landmines to automatically replace ones that have detonated, saving the lives of countless robots."
+}
