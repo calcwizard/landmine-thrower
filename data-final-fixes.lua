@@ -1,26 +1,23 @@
 
 
-local function dying_trigger_effect(flare_name) 
-	return {
-		type = "create-entity",
-		entity_name = flare_name,
-		
-		-- old particle stuff, should be ignored, doesn't affect error either way
-	--[[frame_speed = 0,
-		frame_speed_deviation = 0,
-		initial_vertical_speed=0,
-		initial_vertical_speed_deviation=0,
-		initial_height=0,
-		initial_height_deviation=0,
-		speed_from_center = 0,
-		speed_from_center_deviation=0,
-		]]
-	}
-end
+local dying_trigger_effect = {
+	type = "create-entity",
+	entity_name = "landmine-thrower-flare",
+	
+	-- old particle stuff, should be ignored, doesn't affect error either way
+--[[frame_speed = 0,
+	frame_speed_deviation = 0,
+	initial_vertical_speed=0,
+	initial_vertical_speed_deviation=0,
+	initial_height=0,
+	initial_height_deviation=0,
+	speed_from_center = 0,
+	speed_from_center_deviation=0,
+	]]
+}
 
 local function make_thrower_projectile(base_entity) 
-	data:extend({
-	{
+	return {
 	    type = "artillery-projectile",
 	    name = "thrower-" .. base_entity.name,
 	    flags = {"not-on-map"},
@@ -68,76 +65,9 @@ local function make_thrower_projectile(base_entity)
 			}
 	    },
 	    height_from_ground = 280 / 64
-	},
-})
-end
-
-local function make_flare(base_entity)
-	local flare = {
-		type = "artillery-flare",
-		name = "thrower-flare-" .. base_entity.name,
-		icon = "__base__/graphics/icons/artillery-targeting-remote.png",
-		icon_size = 64, icon_mipmaps = 4,
-		flags = {"placeable-off-grid", "not-on-map"},
-		map_color = {r=1, g=0.5, b=0},
-		flare_category = "thrower-flare-" .. base_entity.name,
-		life_time = 65535, -- unit16 max, 18m 12.25s
-		initial_height = 0,
-		initial_vertical_speed = 0,
-		initial_frame_speed = 1,
-		shots_per_flare = 1,
-		early_death_ticks = 3 * 60,
-		pictures = {
-			{
-			  filename = "__core__/graphics/empty.png",
-			  priority = "extra-high",
-			  width = 1,
-			  height = 1
-			},
-		  --{
-		  --  filename = "__base__/graphics/entity/sparks/sparks-02.png",
-		  --  width = 36,
-		  --  height = 32,
-		  --  frame_count = 19,
-		  --  line_length = 19,
-		  --  shift = {0.03125, 0.125},
-		  --  tint = { r = 1.0, g = 0.9, b = 0.0, a = 1.0 },
-		  --  animation_speed = 0.3,
-		  --}
-		},
-		--[[
-		regular_trigger_effect_frequency = 1,
-		regular_trigger_effect = {
-			type = "create-trivial-smoke",
-			smoke_name = "artillery-smoke",
-			initial_height = 0,
-			speed_from_center = 0.05,
-			speed_from_center_deviation = 0.005,
-			offset_deviation = {{-4, -4}, {4, 4}},
-			max_radius = 3.5,
-			repeat_count = 4 * 4 * 15
-		},
-	]]
 	}
-	
-
-	data:extend({
-		flare,
-		{
-			type = "ammo-category",
-			name = flare.flare_category,
-		},
-	})
-
-	if not base_entity.dying_trigger_effect then
-		base_entity.dying_trigger_effect = {}
-	end
-	table.insert(base_entity.dying_trigger_effect, dying_trigger_effect(flare.flare_category))
-
-	table.insert(data.raw.gun["landmine-thrower-cannon"].attack_parameters.ammo_categories,flare.flare_category)
-
-	return flare.flare_category
 end
+
 
 local function add_resistances(resistances,resist)
 	--[[local updated_resistances = {physical = false, acid = false}
@@ -154,7 +84,6 @@ local function add_resistances(resistances,resist)
 	end]]
 	table.insert(resistances,{type="physical",percent=resist})
 	table.insert(resistances,{type="acid",percent=resist})
-	table.insert(resistances,{type="acid",percent=resist})
 	return resistances
 end 
 
@@ -164,7 +93,10 @@ local landmines = {}
 -- get a list of all land mine entities and the items that make them
 for entity_name,entity in pairs(data.raw["land-mine"]) do
 	entity.create_ghost_on_death = settings.startup["landmine-thrower-leave-ghosts"].value
-	
+	if not entity.dying_trigger_effect then
+		entity.dying_trigger_effect = {}
+	end
+	table.insert(entity.dying_trigger_effect, dying_trigger_effect)
 	
 	--[[if settings.startup["landmine-thrower-quick-arm"].value then
 		entity.timeout = 6
@@ -173,16 +105,17 @@ for entity_name,entity in pairs(data.raw["land-mine"]) do
 		entity.resistances = add_resistances(entity.resistances or {}, 99)
 	end
 
-	make_thrower_projectile(entity)
+	local projectile = make_thrower_projectile(entity)
+    data:extend({projectile})
 
-    landmines[entity_name] = make_flare(entity)
+    landmines[entity_name] = true
 end
 
 for item_name, item in pairs(data.raw.item) do
 	if landmines[item.place_result] then
 		item.type = "ammo"
 		item.ammo_type = {
-			category = landmines[item.place_result],
+			category = "land-mine",
 			target_type = "position",
 			action =
 			{
