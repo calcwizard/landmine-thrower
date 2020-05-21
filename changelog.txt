@@ -1,10 +1,17 @@
 ---------------------------------------------------------------------------------------------------
+Version: 18.0.1
+Date: 2020-05-21
+  Minor Features:
+    - Added range visualization to the landmine thrower.
+  Bugfixes:
+    - Fixed some cases where flares wouldn't be removed properly.
+---------------------------------------------------------------------------------------------------
 Version: 18.0.0
-Date: [color=blue][font=default-large-bold]SOON[/font][font=default-tiny-bold]TM[/font][/color]
+Date: 2020-01-28
   Features:
     - Updated to Factorio version 0.18.
   Balancing:
-    - Decreased default range from 96 to 48 tiles
+    - Decreased default range from 96 to 48 tiles.
 ---------------------------------------------------------------------------------------------------
 Version: 17.1.1
 Date: 2020-01-22
@@ -15,13 +22,13 @@ Date: 2020-01-22
 Version: 17.1.0
 Date: 2020-01-21
   Features:
-    - Throwers automatically target land mine ghosts (such as those created by blueprints)
+    - Throwers automatically target land mine ghosts (such as those created by blueprints).
   Balancing:
     - Added an option to change base launcher range.
-    - Added an option to give land mines 99% damage reduction to physical and acid damage
+    - Added an option to give land mines 99% damage reduction to physical and acid damage.
   Locale:
     - Updated land mine description to remove line about being able to be rebuild by construction bots.
-    - Fixed locale error with land mine thrower item
+    - Fixed locale error with land mine thrower item.
 ---------------------------------------------------------------------------------------------------
 Version: 17.0.0
 Date: 2019-10-14
